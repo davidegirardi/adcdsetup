@@ -1,0 +1,46 @@
+//IBMUSERK  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*--------------------------------------------------------------------
+//* Define symbols for the job steps
+//E1       EXPORT SYMLIST=(USERUC,USERLC)
+//S1          SET USERUC=CUSUS1
+//S2          SET USERLC='cusus1'
+//*--------------------------------------------------------------------
+//* Unmount home directory
+//OMVSUMOU EXEC PGM=BPXBATCH
+//SYSPRINT   DD SYSOUT=*
+//STDOUT     DD SYSOUT=*
+//STDERR     DD SYSOUT=*
+//STDPARM    DD *,SYMBOLS=JCLONLY
+SH
+  echo ls -ld /home/&USERLC;
+  ls -ld /home/&USERLC;
+  echo /usr/sbin/unmount /home/&USERLC ;
+  /usr/sbin/unmount /home/&USERLC ;
+//*--------------------------------------------------------------------
+//* Delete VSAM cluster with the ZFS
+//DELZFS   EXEC PGM=IDCAMS
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD *,SYMBOLS=JCLONLY
+  DELETE '&USERUC..OMVSHOME.ZFS' CLUSTER PURGE
+//*--------------------------------------------------------------------
+//* Delete usercatalog alias
+//DELALIAS EXEC PGM=IKJEFT01
+//SYSTSPRT   DD SYSOUT=*
+//SYSTSIN    DD *,SYMBOLS=JCLONLY
+  DELETE '&USERUC'
+//*--------------------------------------------------------------------
+//* Delete the user from RACF and remove the permissions
+//DELUSER  EXEC PGM=IKJEFT01
+//SYSTSPRT   DD SYSOUT=*
+//SYSTSIN    DD *,SYMBOLS=JCLONLY
+  PERMIT ACCT# DELETE CLASS(ACCTNUM) ID(&USERUC)
+
+  DELDSD '&USERUC..*.**'
+  DELDSD '&USERUC..**.ZFS'
+
+  DELUSER &USERUC
+
+  SETROPTS GENERIC(DATASET) REFRESH

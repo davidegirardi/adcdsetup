@@ -1,0 +1,51 @@
+//IBMUSERA  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*********************************************************************
+//*
+//* CREATE INSTALLATION ID HLQ IN RACF
+//*
+//*********************************************************************
+//LIBSRC JCLLIB ORDER=IBMUSER.SETUP.JOBS
+//INSTV INCLUDE MEMBER=@CONFIG
+//*--------------------------------------------------------------------
+//* OVERVIEW:
+//*
+//* ENABLE ENHANCE GENERIC NAMES, TO USE SOME.*.** WITH SETROPTS EGN
+//* CREATE AN INSTALLATION ID GROUP TO SHARE THE HLQ
+//* CREATE A USERCAT GROUP
+//* PROTECT THE DATASETS BY DEFAULT WITH UACC(NONE)
+//* ALLOW READ ACCESS TO EVERYONE WHO'S LOGGED IN WITH ID(*)
+//* PROTECT THE USER CATALOG
+//* ALLOW LOGGED IN USERS (ID(*)) TO UPDATE THE USER CATALOG
+//* REFRESH THE RACF OPTIONS
+//*--------------------------------------------------------------------
+//*********************************************************************
+//HLQRACF  EXEC PGM=IKJEFT01
+//SYSPRINT   DD SYSOUT=*
+//SYSTSPRT   DD SYSOUT=*
+//SYSTSIN    DD *,SYMBOLS=JCLONLY
+  SETROPTS EGN
+
+  ADDGROUP -
+    &INSTID -
+    OWNER(IBMUSER) -
+    SUPGROUP(SYS1) -
+    DATA('&INSTID. HLQ GROUP')
+
+  ADDGROUP -
+    USERCAT -
+    OWNER(IBMUSER) -
+    SUPGROUP(SYS1) -
+    DATA('USERCAT HLQ')
+
+  ADDSD '&INSTID..*.**' UACC(NONE)
+
+  PERMIT '&INSTID..*.**' CLASS(DATASET) ACCESS(READ) ID(*)
+
+  ADDSD 'USERCAT.&INSTID' UACC(NONE)
+
+  PERMIT 'USERCAT.&INSTID' CLASS(DATASET) ACCESS(UPDATE) ID(*)
+
+  SETROPTS GENERIC(DATASET) REFRESH

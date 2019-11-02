@@ -1,0 +1,7 @@
+//* Installation-wide configuration variables
+//       EXPORT SYMLIST=(INSTID,MAINGRP,BASEUID,BASEGID)
+//          SET INSTID=CUS
+//          SET MAINGRP=MYGROUP
+//* THE DEFAULT GIDS IN ADCD ARRIVE UP TO 990015 SO WE START FROM 1M
+//          SET BASEUID=1000001
+//          SET BASEGID=1000001

@@ -1,0 +1,28 @@
+//IBMUSERA  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*********************************************************************
+//*
+//* DASD INITIALIZATION
+//*
+//*********************************************************************
+//*--------------------------------------------------------------------
+//LIBSRC JCLLIB ORDER=IBMUSER.SETUP.JOBS
+//INSTV INCLUDE MEMBER=@CONFIG
+//*--------------------------------------------------------------------
+//* RUN ICKDSF WITH NO OPERATOR CONFIRMATION
+//INIT1    EXEC PGM=ICKDSF,PARM='NOREPLYU',REGION=0M
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD *,SYMBOLS=JCLONLY
+  INIT UNIT(0AA1) VERIFY(*NONE*) VOLID(&INSTID.001) STORAGEGROUP
+//*--------------------------------------------------------------------
+//INIT2    EXEC PGM=ICKDSF,PARM='NOREPLYU',REGION=0M
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD *,SYMBOLS=JCLONLY
+  INIT UNIT(0AA2) VERIFY(*NONE*) VOLID(&INSTID.002) STORAGEGROUP
+//*--------------------------------------------------------------------
+//INIT3    EXEC PGM=ICKDSF,PARM='NOREPLYU',REGION=0M
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD *,SYMBOLS=JCLONLY
+  INIT UNIT(0AA3) VERIFY(*NONE*) VOLID(&INSTID.003) STORAGEGROUP

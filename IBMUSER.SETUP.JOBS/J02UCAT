@@ -1,0 +1,22 @@
+//IBMUSERA  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*********************************************************************
+//*
+//* CREATE A USER CATALOG FOR THE INSTALLATION ID
+//*
+//*********************************************************************
+//LIBSRC JCLLIB ORDER=IBMUSER.SETUP.JOBS
+//INSTV INCLUDE MEMBER=@CONFIG
+//*--------------------------------------------------------------------
+//* CREATE USER CATALOG
+//UCATADD  EXEC PGM=IDCAMS
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD *,SYMBOLS=JCLONLY
+  DEFINE USERCATALOG( -
+    NAME(USERCAT.&INSTID) -
+    ICFCATALOG -
+    CYLINDERS(10 10) -
+  )
+/*

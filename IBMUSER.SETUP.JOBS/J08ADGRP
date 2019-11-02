@@ -1,0 +1,23 @@
+//IBMUSERA  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*********************************************************************
+//*
+//* ADD A NEW OMVS GROUP FOR OUR USERS
+//*
+//* THE SUPERIOR GROUP IS THE INSTALLATION ID DEFINED IN @CONFIG
+//*
+//*********************************************************************
+//LIBSRC JCLLIB ORDER=IBMUSER.SETUP.JOBS
+//INSTV INCLUDE MEMBER=@CONFIG
+//*--------------------------------------------------------------------
+//*
+//RACFGID  EXEC PGM=IKJEFT01
+//SYSTSPRT   DD SYSOUT=*
+//SYSTSIN    DD *,SYMBOLS=JCLONLY
+  ADDGROUP &MAINGRP -
+    DATA('Default OMVS group for &MAINGRP users') -
+    OWNER(IBMUSER) -
+    SUPGROUP(&INSTID) -
+    OMVS(AUTOGID)

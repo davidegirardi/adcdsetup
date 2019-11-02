@@ -1,0 +1,98 @@
+//IBMUSERA  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*********************************************************************
+//*
+//* Create a user with a random password, TSO and OMVS segments
+//*
+//*********************************************************************
+//*--------------------------------------------------------------------
+//LIBSRC JCLLIB ORDER=IBMUSER.SETUP.JOBS
+//INSTV INCLUDE MEMBER=@CONFIG
+//*--------------------------------------------------------------------
+//* Define symbols for the job steps
+//E1       EXPORT SYMLIST=(USERUC,USERLC,NAME)
+//S1          SET USERUC=CUSUSR1
+//S2          SET USERLC='cususr1'
+//S3          SET NAME='Custom User One'
+//*--------------------------------------------------------------------
+//* TODO: no UACC(READ) for the home filesystem.
+//* Probably step 3 here:
+//* https://www.ibm.com/support/knowledgecenter/SSLTBW_2.1.0/com.ibm.zos
+//* .v2r1.bpxb200/racfpre.htm
+//*
+//ADDUSER  EXEC PGM=IKJEFT01
+//SYSTSPRT   DD SYSOUT=*
+//SYSTSIN    DD *,SYMBOLS=JCLONLY
+  ADDUSER &USERUC -
+    DFLTGRP(&MAINGRP) -
+    OWNER(IBMUSER) -
+    NAME('&NAME') -
+    PASSWORD(CHANGEME) -
+    TSO( -
+        ACCTNUM(ACCT#) -
+        PROC(ISPFPROC) -
+       ) -
+    OMVS( -
+         AUTOUID -
+         HOME('/home/&USERLC') -
+         PROGRAM('/bin/sh') -
+        )
+
+  ADDSD '&USERUC..*.**' UACC(NONE)
+  PERMIT '&USERUC..*.**' ACCESS(ALTER) ID(&USERUC)
+  ADDSD '&USERUC..**.ZFS' UACC(READ)
+
+  PERMIT ACCT# CLASS(ACCTNUM) ID (&USERUC)
+
+  SETROPTS GENERIC(DATASET) REFRESH
+//*--------------------------------------------------------------------
+//           IF RC=0 THEN
+//* Generate a random password for the user
+//GENPASS  EXEC PGM=IKJEFT01
+//SYSTSPRT   DD SYSOUT=*
+//SYSTSIN    DD *,SYMBOLS=JCLONLY
+  EXEC 'IBMUSER.SETUP.JOBS(GENPASS)' '&USERUC'
+//*
+//        ENDIF
+//*--------------------------------------------------------------------
+//* Create an alias in the usercatalog, so the user can create DS
+//CATALIAS EXEC PGM=IDCAMS
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD *,SYMBOLS=JCLONLY
+  DEFINE ALIAS(NAME(&USERUC) RELATE(USERCAT.&INSTID))
+//*--------------------------------------------------------------------
+//* Create ZFS for home directory
+//* Save the ZFS in a linerar VSAM cluster
+//* 50MB of initial allocation plus increments of 10MB
+//* The VSAM cluster is shareable
+//CREATEFS EXEC PGM=IDCAMS
+//SYSPRINT   DD SYSOUT=*
+//SYSIN      DD *,SYMBOLS=JCLONLY
+  DEFINE CLUSTER( -
+                 NAME(&USERUC..OMVSHOME.ZFS) -
+                 LINEAR -
+                 CYLINDERS(50 10) -
+                 SHAREOPTIONS(2) -
+                )
+//*--------------------------------------------------------------------
+//* Format the ZFS
+//* Uses the Aggregate Format in the IOE segment
+//* Runs  IOEAGFMT in compatibility mode
+//FORMATFS EXEC PGM=IOEAGFMT,REGION=0M,
+//             PARM=('-aggregate &USERUC..OMVSHOME.ZFS -compat')
+//SYSPRINT   DD SYSOUT=*
+//STDOUT     DD SYSOUT=*
+//STDERR     DD SYSOUT=*
+//*--------------------------------------------------------------------
+//* Mount the home directory and fix permissions
+//OMVSPERM EXEC PGM=BPXBATCH
+//SYSPRINT   DD SYSOUT=*
+//STDOUT     DD SYSOUT=*
+//STDERR     DD SYSOUT=*
+//STDPARM    DD *,SYMBOLS=JCLONLY
+SH
+  cd /home/&USERLC ;
+  chown &USERUC:&MAINGRP /home/&USERLC ;
+  chmod 700 /home/&USERLC ;

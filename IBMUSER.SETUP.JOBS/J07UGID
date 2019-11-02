@@ -1,0 +1,19 @@
+//IBMUSERA  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*********************************************************************
+//*
+//* CREATE AUTOINCREMENTING UID/GID FOR USS/OMVS IN RACF
+//*
+//*********************************************************************
+//*--------------------------------------------------------------------
+//LIBSRC JCLLIB ORDER=IBMUSER.SETUP.JOBS
+//INSTV INCLUDE MEMBER=@CONFIG
+//*--------------------------------------------------------------------
+//*
+//RACFGID  EXEC PGM=IKJEFT01
+//SYSTSPRT   DD SYSOUT=*
+//SYSTSIN    DD *,SYMBOLS=JCLONLY
+  RALTER FACILITY BPX.NEXT.USER APPLDATA('&BASEUID./&BASEGID')
+  SETROPTS RACLIST(FACILITY) REFRESH

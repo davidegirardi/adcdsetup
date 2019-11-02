@@ -1,0 +1,77 @@
+/* REXX */
+/**********************************************************************/
+/* Generate a new password for the username parameter                 */
+/*                                                                    */
+/**********************************************************************/
+call LoadCONSTANTS
+
+parse arg User
+if user == "" then do
+  Say "Usage:"
+  Say ">>-GENPASS--username-><"
+  exit 1
+end
+
+/* New password for ADCDMST */
+call AssignPassword User GenPassword()
+
+/* All done */
+exit
+
+AssignPassword:
+  parse arg user password
+  ADDRESS TSO "ALTUSER "||user||" PASSWORD("||password||")"
+  say "New password for "||user||": "||password
+return
+
+GenPassword:
+  password = ''
+  do until (length(password) > 7)
+    i = random(1,PASSPIECES.0)
+    newchar = PASSPIECES.i
+    password = password||newchar
+  end
+  return password
+
+LoadCONSTANTS:
+  PASSPIECES.0 = 39
+  PASSPIECES.1 = A
+  PASSPIECES.2 = B
+  PASSPIECES.3 = C
+  PASSPIECES.4 = D
+  PASSPIECES.5 = E
+  PASSPIECES.6 = F
+  PASSPIECES.7 = G
+  PASSPIECES.8 = H
+  PASSPIECES.9 = I
+  PASSPIECES.10 = J
+  PASSPIECES.11 = K
+  PASSPIECES.12 = L
+  PASSPIECES.13 = M
+  PASSPIECES.14 = N
+  PASSPIECES.15 = O
+  PASSPIECES.16 = P
+  PASSPIECES.17 = Q
+  PASSPIECES.18 = R
+  PASSPIECES.19 = S
+  PASSPIECES.20 = T
+  PASSPIECES.21 = U
+  PASSPIECES.22 = V
+  PASSPIECES.23 = W
+  PASSPIECES.24 = X
+  PASSPIECES.25 = Y
+  PASSPIECES.26 = Z
+  PASSPIECES.27 = 0
+  PASSPIECES.28 = 1
+  PASSPIECES.29 = 2
+  PASSPIECES.30 = 3
+  PASSPIECES.31 = 4
+  PASSPIECES.32 = 5
+  PASSPIECES.33 = 6
+  PASSPIECES.34 = 7
+  PASSPIECES.35 = 8
+  PASSPIECES.36 = 9
+  PASSPIECES.37 = @
+  PASSPIECES.38 = #
+  PASSPIECES.39 = $
+return

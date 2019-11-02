@@ -1,0 +1,68 @@
+#
+# REVIEW THIS SCRIPT!
+# IT DOES NOT LOAD VARIABLES FROM @CONFIG
+#
+#
+# Configure home directory automount for OMVS
+# Copy this to a unix file and run it to create the automout files
+# Use a codepage for support for brackets to display the script
+
+# Copy to unix:
+# # cp "//'IBMUSER.SETUP.JOBS(J09AUTOM)'" runme
+# Run:
+# # sh runme
+
+#!/bin/sh
+
+AUTOMASTER=/etc/auto.master
+AUTOMOUNTCMD=/usr/sbin/automount
+RCFILE=/etc/rc
+HOMEDIR=/home
+HOMEMAP=/etc/home.map
+# How many minutes should OMVS keep the home directory mounted after 
+# last use?
+MOUNTDURATION=30
+
+echo "Create $HOMEDIR (if needed)..."
+mkdir -p "$HOMEDIR"
+chmod 755 "$HOMEDIR"
+
+if [ -f "$AUTOMASTER" ]
+then
+    echo "$AUTOMASTER already present. Skipping creation..."
+else
+    echo "Configuring automount master..."
+# Create the master file
+cat << EOF > "$AUTOMASTER"
+$HOMEDIR      $HOMEMAP
+EOF
+fi
+
+if [ -f "$HOMEMAP" ]
+then
+    echo "$HOMEMAP already present. Skipping creation..."
+else
+    echo "Configuring /u/* automount..."
+# Configure the home directory automount
+cat << EOF > "$HOMEMAP"
+name        *
+type        ZFS
+filesystem  <uc_name>.OMVSHOME.ZFS
+mode        rdwr
+duration    $MOUNTDURATION
+delay       10
+EOF
+fi
+
+if grep "$AUTOMOUNTCMD" "$RCFILE" > /dev/null
+then
+    echo "$AUTOMOUNTCMD already present in $RCFILE"
+else
+    echo "Add $AUTOMOUNTCMD to $RCFILE..."
+    cp "$RCFILE" "$RCFILE.bak"
+    echo "echo Starting automount..." >> "$RCFILE"
+    echo "$AUTOMOUNTCMD" >> "$RCFILE"
+fi
+
+echo "Reprocess automount configuration..."
+$AUTOMOUNTCMD

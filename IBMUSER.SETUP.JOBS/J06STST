@@ -1,0 +1,17 @@
+//IBMUSERA  JOB ACCT#,
+//             IBMUSER,
+//             NOTIFY=IBMUSER,
+//             MSGLEVEL=(1,1)
+//*********************************************************************
+//*
+//* CREATE SOME DATASETS TO TEST SMS
+//*
+//*********************************************************************
+//LIBSRC JCLLIB ORDER=IBMUSER.SETUP.JOBS
+//INSTV INCLUDE MEMBER=@CONFIG
+//*--------------------------------------------------------------------
+//CREATE1  EXEC PGM=IEFBR14
+//ALLOCDS    DD DSN=&INSTID..TEST1.DATASET,
+//             DISP=(,CATLG,DELETE),
+//             SPACE=(TRK,(1,1)),
+//             DCB=(LRECL=80,RECFM=FB,BLKSIZE=80)
