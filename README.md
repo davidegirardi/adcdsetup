@@ -11,19 +11,19 @@ This directory contains all the setup scripts. Create a `IBMUSER.SETUP.JOBS` PDS
 
 Here's an overview:
 
-    * `@CONFIG` is the main configuration file. Pretty much the only one to edit.
-    * `J00ADCDP` generate a random password for all the default ADCD users, except `IBMUSER`.
-    * `J01DASDI` DASD initialization.
-    * `J02UCAT` create a user catalog.
-    * `J03HLQ` create an alias for the main HLQ and links it to the user catalog.
-    * `J04RACF` protection of the main HLQ and group.
-    * `J05SMS` instructions about the configuration of SMS. This is not a script.
-    * `J06STST` test the SMS configuration.
-    * `J07UGID` configure RACF for the automatic UID/GID generation for OMVS.
-    * `J08ADGRP` create a default group in OMVS for our users.
-    * `J09AUTOM` configure automount for OMVS homes. This is an OMVS script.
-    * `J10ADUSR` create a user.
-    * `J11RMUSR` delete a user.
-    * `GENPASS` generates a random password for a user. Dependency of `J10ADUSR`.
-    * `@JOBCARD` skeleton job card.
+* `@CONFIG` is the main configuration file. Pretty much the only one to edit.
+* `J00ADCDP` generate a random password for all the default ADCD users, except `IBMUSER`.
+* `J01DASDI` DASD initialization.
+* `J02UCAT` create a user catalog.
+* `J03HLQ` create an alias for the main HLQ and links it to the user catalog.
+* `J04RACF` protection of the main HLQ and group.
+* `J05SMS` instructions about the configuration of SMS. This is not a script.
+* `J06STST` test the SMS configuration.
+* `J07UGID` configure RACF for the automatic UID/GID generation for OMVS.
+* `J08ADGRP` create a default group in OMVS for our users.
+* `J09AUTOM` configure automount for OMVS homes. This is an OMVS script.
+* `J10ADUSR` create a user.
+* `J11RMUSR` delete a user.
+* `GENPASS` generates a random password for a user. Dependency of `J10ADUSR`.
+* `@JOBCARD` skeleton job card.
 
