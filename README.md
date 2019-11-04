@@ -4,9 +4,9 @@ If you are running an emulated mainframe with zD&T or zPDT, these are the jobs f
 
 Watch the great videos from [Henri Kuiper](https://www.youtube.com/channel/UCNqJto8aivX0_mZWRZnkzwQ "Henri Kuiper's Youtube channel") to get a hold about what this stuff does.
 
-There are some extra scripts in here, They pretty much just complete his workflow.
+There are some extra scripts in here. They just extend Henri's workflow to automate even more.
 
-## IBMUSER.SETUP.JOBS
+## SETUP.JOBS
 This directory contains all the setup scripts. Create a `IBMUSER.SETUP.JOBS` PDS on your mainframe and upload all the members there.
 
 Here's an overview:
@@ -26,4 +26,7 @@ Here's an overview:
 * `J11RMUSR` delete a user.
 * `GENPASS` generates a random password for a user. Dependency of `J10ADUSR`.
 * `@JOBCARD` skeleton job card.
+
+## TODO
+See `SETUP.JOBS/TODO`.
 
