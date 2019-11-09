@@ -33,6 +33,7 @@
     TSO( -
         ACCTNUM(ACCT#) -
         PROC(ISPFPROC) -
+        COMMAND(ISPF) -
        ) -
     OMVS( -
          AUTOUID -
