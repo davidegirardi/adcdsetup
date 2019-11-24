@@ -47,7 +47,10 @@
 
   PERMIT ACCT# CLASS(ACCTNUM) ID (&USERUC)
 
+  PERMIT JCL CLASS(TSOAUTH) ID(&USERUC) ACCESS(READ)
+
   SETROPTS GENERIC(DATASET) REFRESH
+  SETROPTS RACLIST(TSOAUTH) REFRESH
 //*--------------------------------------------------------------------
 //           IF RC=0 THEN
 //* Generate a random password for the user
